@@ -4,21 +4,23 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>0.0.1</Version>
+        <Version>0.2.0</Version>
     </PropertyGroup>
 
     <PropertyGroup>
         <PackageId>Orleans.Streams.Grains</PackageId>
-        <PackageVersion>0.1.0-preview1</PackageVersion>
-        <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <PackageTags>Orleans;Streams;Grains</PackageTags>
+        <RepositoryType>git</RepositoryType>
+        <GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
+        <License>MIT</License>
         <Authors>jadeloft</Authors>
         <Description>Stream provider that uses Stateful Grains as Queues.</Description>
         <PackageProjectUrl>https://github.com/RayMMond/Orleans.Streams.Grains</PackageProjectUrl>
         <RepositoryUrl>https://github.com/RayMMond/Orleans.Streams.Grains</RepositoryUrl>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <IsPackable>true</IsPackable>
-        <PackageTags>Orleans;Streams;Grains</PackageTags>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
