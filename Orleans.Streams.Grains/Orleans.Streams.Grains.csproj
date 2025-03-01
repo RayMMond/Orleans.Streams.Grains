@@ -13,7 +13,8 @@
         <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
         <Authors>jadeloft</Authors>
         <Description>Stream provider that uses Stateful Grains as Queues.</Description>
-        <RepositoryUrl>https://github.com/jadeloft/Orleans.Streams.Grains</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/RayMMond/Orleans.Streams.Grains</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/RayMMond/Orleans.Streams.Grains</RepositoryUrl>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <IsPackable>true</IsPackable>
