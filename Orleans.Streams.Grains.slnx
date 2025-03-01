@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Orleans.Streams.Grains.Tests\Orleans.Streams.Grains.Tests.csproj" Type="Classic C#" />
+  <Project Path="Orleans.Streams.Grains/Orleans.Streams.Grains.csproj" />
+</Solution>
