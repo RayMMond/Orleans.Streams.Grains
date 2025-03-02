@@ -32,12 +32,12 @@ public sealed class GrainsQueueStreamProviderBuilder : IProviderBuilder<ISiloBui
 {
     public void Configure(ISiloBuilder builder, string name, IConfigurationSection configurationSection)
     {
-        builder.AddGrainsQueueStreams(name, GetQueueOptionBuilder(configurationSection));
+        builder.AddGrainsStreams(name, GetQueueOptionBuilder(configurationSection));
     }
 
     public void Configure(IClientBuilder builder, string name, IConfigurationSection configurationSection)
     {
-        builder.AddGrainsQueueStreams(name, GetQueueOptionBuilder(configurationSection));
+        builder.AddGrainsStreams(name, GetQueueOptionBuilder(configurationSection));
     }
 
     private static Action<OptionsBuilder<GrainsStreamProviderOptions>> GetQueueOptionBuilder(

@@ -8,7 +8,7 @@ public static class ClientBuilderExtensions
     /// <summary>
     /// Configure cluster client to use Grains queue persistent streams.
     /// </summary>
-    public static IClientBuilder AddGrainsQueueStreams(this IClientBuilder builder,
+    public static IClientBuilder AddGrainsStreams(this IClientBuilder builder,
         string name,
         Action<ClusterClientGrainsQueueStreamConfigurator>? configure = null)
     {
@@ -21,10 +21,10 @@ public static class ClientBuilderExtensions
     /// <summary>
     /// Configure cluster client to use Grains queue persistent streams.
     /// </summary>
-    public static IClientBuilder AddGrainsQueueStreams(this IClientBuilder builder,
+    public static IClientBuilder AddGrainsStreams(this IClientBuilder builder,
         string name, Action<OptionsBuilder<GrainsStreamProviderOptions>> configureOptions)
     {
-        builder.AddGrainsQueueStreams(name, b =>
+        builder.AddGrainsStreams(name, b =>
             b.ConfigureGrainsQueue(configureOptions));
         return builder;
     }

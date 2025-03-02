@@ -8,7 +8,7 @@ public static class SiloBuilderExtensions
     /// <summary>
     /// Configure silo to use Grains queue persistent streams.
     /// </summary>
-    public static ISiloBuilder AddGrainsQueueStreams(this ISiloBuilder builder, string name,
+    public static ISiloBuilder AddGrainsStreams(this ISiloBuilder builder, string name,
         Action<SiloGrainsQueueStreamConfigurator> configure)
     {
         var configurator = new SiloGrainsQueueStreamConfigurator(name,
@@ -20,10 +20,10 @@ public static class SiloBuilderExtensions
     /// <summary>
     /// Configure silo to use Grains queue persistent streams with default settings
     /// </summary>
-    public static ISiloBuilder AddGrainsQueueStreams(this ISiloBuilder builder, string name,
+    public static ISiloBuilder AddGrainsStreams(this ISiloBuilder builder, string name,
         Action<OptionsBuilder<GrainsStreamProviderOptions>> configureOptions)
     {
-        builder.AddGrainsQueueStreams(name, b =>
+        builder.AddGrainsStreams(name, b =>
             b.ConfigureGrainsQueue(configureOptions));
         return builder;
     }
