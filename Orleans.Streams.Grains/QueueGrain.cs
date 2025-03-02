@@ -36,7 +36,7 @@ public class QueueGrain(
     public async Task DeleteQueueMessageAsync(GrainsQueueBatchContainer message)
     {
         var pending = persistentState.State.PendingMessages.Dequeue();
-        while (pending.SequenceToken != message.SequenceToken)
+        while (!pending.SequenceToken.Equals(pending.SequenceToken))
         {
             switch (options.Value.DeadLetterStrategy)
             {
@@ -65,5 +65,16 @@ public class QueueGrain(
     {
         persistentState.State.LastReadMessage = 0;
         await persistentState.WriteStateAsync();
+    }
+
+    public Task<QueueStatus> GetStatusAsync()
+    {
+        var status = new QueueStatus(persistentState.Etag,
+            persistentState.State.LastReadMessage,
+            persistentState.State.Messages.Count,
+            persistentState.State.PendingMessages.Count,
+            persistentState.State.DroppedMessages.Count);
+
+        return Task.FromResult(status);
     }
 }

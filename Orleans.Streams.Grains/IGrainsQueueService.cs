@@ -9,4 +9,6 @@ public interface IGrainsQueueService
     Task DeleteQueueMessageAsync(QueueId queueId, GrainsQueueBatchContainer message);
 
     Task ShutdownAsync(QueueId queueId);
+
+    Task<GrainsQueueStatus> GetQueueStatusAsync(QueueId? queueId = null);
 }

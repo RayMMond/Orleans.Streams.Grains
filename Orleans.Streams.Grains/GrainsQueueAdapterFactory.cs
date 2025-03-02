@@ -8,28 +8,31 @@ namespace Orleans.Streams.Grains;
 public class GrainsQueueAdapterFactory : IQueueAdapterFactory
 {
     private readonly string _providerName;
-    private readonly IGrainsQueueService _grainsQueueService;
     private readonly ILoggerFactory _loggerFactory;
     private readonly SimpleQueueAdapterCache _adapterCache;
-    private readonly GrainsStreamQueueMapper _grainStreamQueueMapper;
+    private readonly IStreamQueueMapper _streamQueueMapper;
+    private readonly GrainsQueueService _grainsQueueService;
 
     /// <summary>
     /// Application level failure handler override.
     /// </summary>
     protected Func<QueueId, Task<IStreamFailureHandler>>? StreamFailureHandlerFactory { private get; set; }
 
-    public GrainsQueueAdapterFactory(
-        string name,
+    public GrainsQueueAdapterFactory(string name,
         GrainsStreamProviderOptions options,
         SimpleQueueCacheOptions cacheOptions,
-        IGrainsQueueService grainsQueueService,
+        IClusterClient client,
         ILoggerFactory loggerFactory)
     {
         _providerName = name;
-        _grainsQueueService = grainsQueueService;
         _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         _adapterCache = new SimpleQueueAdapterCache(cacheOptions, _providerName, _loggerFactory);
-        _grainStreamQueueMapper = new GrainsStreamQueueMapper(options);
+        _streamQueueMapper = new GrainsStreamQueueMapper(options);
+        _grainsQueueService = new GrainsQueueService(
+            _providerName,
+            _streamQueueMapper,
+            client);
+        StreamFailureHandlerFactory = options.StreamFailureHandlerFactory;
     }
 
     /// <summary> Init the factory.</summary>
@@ -43,7 +46,7 @@ public class GrainsQueueAdapterFactory : IQueueAdapterFactory
     public virtual Task<IQueueAdapter> CreateAdapter()
     {
         var adapter = new GrainsQueueAdapter(
-            _grainStreamQueueMapper,
+            _streamQueueMapper,
             _grainsQueueService,
             _loggerFactory,
             _providerName);
@@ -56,10 +59,15 @@ public class GrainsQueueAdapterFactory : IQueueAdapterFactory
         return _adapterCache;
     }
 
+    public IGrainsQueueService GetGrainsQueueService()
+    {
+        return _grainsQueueService;
+    }
+
     /// <summary>Creates the factory stream queue mapper.</summary>
     public IStreamQueueMapper GetStreamQueueMapper()
     {
-        return _grainStreamQueueMapper;
+        return _streamQueueMapper;
     }
 
     /// <summary>
@@ -76,8 +84,6 @@ public class GrainsQueueAdapterFactory : IQueueAdapterFactory
     {
         var options = services.GetOptionsByName<GrainsStreamProviderOptions>(name);
         var cacheOptions = services.GetOptionsByName<SimpleQueueCacheOptions>(name);
-        // var dataAdapter = services.GetKeyedService<IQueueDataAdapter<string, IBatchContainer>>(name)
-        //                   ?? services.GetService<IQueueDataAdapter<string, IBatchContainer>>();
         var factory =
             ActivatorUtilities.CreateInstance<GrainsQueueAdapterFactory>(services, name, options,
                 cacheOptions);

@@ -1,15 +1,13 @@
 using System.Collections.Concurrent;
-using System.Collections.Immutable;
+using Orleans.Configuration;
 using Orleans.Runtime;
 
 namespace Orleans.Streams.Grains;
 
-public class GrainsStreamQueueMapper : IStreamQueueMapper
+public class GrainsStreamQueueMapper : IConsistentRingStreamQueueMapper
 {
-    private readonly GrainsStreamProviderOptions _options;
-    private readonly ConcurrentDictionary<StreamId, QueueId> _streamToQueue = new();
-    private readonly Dictionary<string, Queue<QueueId>> _streamNamespaceQueues = new();
-    private readonly Lock _lock = new();
+    private const string EmptyNamespace = "(empty)";
+    private readonly ConcurrentDictionary<string, HashRingBasedStreamQueueMapper> _ringQueues = [];
 
     public GrainsStreamQueueMapper(GrainsStreamProviderOptions options)
     {
@@ -18,38 +16,32 @@ public class GrainsStreamQueueMapper : IStreamQueueMapper
             throw new ArgumentException("至少需要1个队列");
         }
 
-        _options = options;
+        foreach (var ns in options.Namespaces.Concat([EmptyNamespace]).Distinct())
+        {
+            _ringQueues.TryAdd(ns, new HashRingBasedStreamQueueMapper(new HashRingStreamQueueMapperOptions
+            {
+                TotalQueueCount = options.MaxStreamNamespaceQueueCount
+            }, ns));
+        }
     }
 
     public IEnumerable<QueueId> GetAllQueues()
     {
-        lock (_lock)
-        {
-            return _streamNamespaceQueues.Values
-                .SelectMany(x => x)
-                .ToImmutableArray();
-        }
+        return _ringQueues.Values.SelectMany(x => x.GetAllQueues());
     }
 
     public QueueId GetQueueForStream(StreamId streamId)
     {
-        return _streamToQueue.GetOrAdd(streamId, key =>
+        if (!_ringQueues.TryGetValue(streamId.GetNamespace() ?? EmptyNamespace, out var ringQueue))
         {
-            lock (_lock)
-            {
-                var streamNamespace = key.GetNamespace() ?? "(empty)";
-                if (!_streamNamespaceQueues.TryGetValue(streamNamespace, out var queueIds))
-                {
-                    queueIds = new Queue<QueueId>();
-                    _streamNamespaceQueues.Add(streamNamespace, queueIds);
-                }
+            throw new ArgumentException($"未找到命名空间{streamId.GetNamespace()}对应的队列");
+        }
 
-                var queueId = queueIds.Count < _options.MaxStreamNamespaceQueueCount
-                    ? QueueId.GetQueueId(streamNamespace, (uint)queueIds.Count, 0)
-                    : queueIds.Dequeue();
-                queueIds.Enqueue(queueId);
-                return queueId;
-            }
-        });
+        return ringQueue.GetQueueForStream(streamId);
+    }
+
+    public IEnumerable<QueueId> GetQueuesForRange(IRingRange range)
+    {
+        return _ringQueues.Values.SelectMany(x => x.GetQueuesForRange(range));
     }
 }

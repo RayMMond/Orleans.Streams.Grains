@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Orleans.Streams.Grains;
@@ -42,13 +41,14 @@ public class GrainsQueueAdapterReceiver : IQueueAdapterReceiver
             _outstandingTask = task;
             var messages = await task;
 
-            var azureQueueMessages = new List<IBatchContainer>();
+            var queueMessages = new List<IBatchContainer>();
             foreach (var message in messages)
             {
                 _pending.Add(new PendingDelivery(message.SequenceToken, message));
+                queueMessages.Add(message);
             }
 
-            return azureQueueMessages;
+            return queueMessages;
         }
         finally
         {
@@ -75,7 +75,6 @@ public class GrainsQueueAdapterReceiver : IQueueAdapterReceiver
             _shutdown = true;
         }
     }
-
 
     public async Task MessagesDeliveredAsync(IList<IBatchContainer> messages)
     {

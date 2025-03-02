@@ -10,11 +10,11 @@ public static class ClientBuilderExtensions
     /// </summary>
     public static IClientBuilder AddGrainsStreams(this IClientBuilder builder,
         string name,
-        Action<ClusterClientGrainsQueueStreamConfigurator>? configure = null)
+        Action<ClusterClientGrainsQueueStreamConfigurator> configure)
     {
         //the constructor wires up DI with GrainsQueueStream, so has to be called regardless configure is null or not
         var configurator = new ClusterClientGrainsQueueStreamConfigurator(name, builder);
-        configure?.Invoke(configurator);
+        configure.Invoke(configurator);
         return builder;
     }
 
@@ -22,10 +22,12 @@ public static class ClientBuilderExtensions
     /// Configure cluster client to use Grains queue persistent streams.
     /// </summary>
     public static IClientBuilder AddGrainsStreams(this IClientBuilder builder,
-        string name, Action<OptionsBuilder<GrainsStreamProviderOptions>> configureOptions)
+        string name, Action<OptionsBuilder<GrainsStreamProviderOptions>>? configureOptions = null)
     {
         builder.AddGrainsStreams(name, b =>
-            b.ConfigureGrainsQueue(configureOptions));
+        {
+            if (configureOptions != null) b.ConfigureGrainsQueue(configureOptions);
+        });
         return builder;
     }
 }
