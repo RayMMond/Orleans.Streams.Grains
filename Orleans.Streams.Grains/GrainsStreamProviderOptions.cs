@@ -6,7 +6,14 @@ public class GrainsStreamProviderOptions
 
     public int MaxStreamNamespaceQueueCount { get; set; } = DefaultMaxStreamNamespaceQueueCount;
 
-    public string[] Namespaces { get; set; } = [];
+    public GrainsStreamProviderNamespaceQueueOptions[] NamespaceQueue { get; set; } = [];
 
     public Func<QueueId, Task<IStreamFailureHandler>>? StreamFailureHandlerFactory { get; set; }
+
+    public class GrainsStreamProviderNamespaceQueueOptions
+    {
+        public required string Namespace { get; set; } = "";
+
+        public int QueueCount { get; set; } = DefaultMaxStreamNamespaceQueueCount;
+    }
 }

@@ -16,12 +16,20 @@ public class GrainsStreamQueueMapper : IConsistentRingStreamQueueMapper
             throw new ArgumentException("至少需要1个队列");
         }
 
-        foreach (var ns in options.Namespaces.Concat([EmptyNamespace]).Distinct())
-        {
-            _ringQueues.TryAdd(ns, new HashRingBasedStreamQueueMapper(new HashRingStreamQueueMapperOptions
+        var allOptions = options.NamespaceQueue.Concat([
+            new GrainsStreamProviderOptions.GrainsStreamProviderNamespaceQueueOptions
             {
-                TotalQueueCount = options.MaxStreamNamespaceQueueCount
-            }, ns));
+                Namespace = EmptyNamespace,
+                QueueCount = options.MaxStreamNamespaceQueueCount
+            }
+        ]);
+
+        foreach (var ns in allOptions)
+        {
+            _ringQueues.TryAdd(ns.Namespace, new HashRingBasedStreamQueueMapper(new HashRingStreamQueueMapperOptions
+            {
+                TotalQueueCount = ns.QueueCount
+            }, ns.Namespace));
         }
     }
 

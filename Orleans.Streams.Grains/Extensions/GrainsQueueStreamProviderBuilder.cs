@@ -20,7 +20,7 @@ using Orleans.Streams.Grains.Extensions;
 // 			"{{StreamProviderName}}": {
 // 				"ProviderType": "GrainsQueueStorage",
 // 				"MaxStreamNamespaceQueueCount": "10",
-//              "Namespaces":["Namespace1", "Namespace2"]
+//              "NamespaceQueue":[{"Namespace":"ns1","QueueCount":5},{"Namespace":"ns2","QueueCount":5}]
 // 			}
 // 		}
 // 	}
@@ -52,7 +52,7 @@ public sealed class GrainsQueueStreamProviderBuilder : IProviderBuilder<ISiloBui
                     int.TryParse(configurationSection["MaxStreamNamespaceQueueCount"], out var c)
                         ? c
                         : GrainsStreamProviderOptions.DefaultMaxStreamNamespaceQueueCount;
-                configurationSection.GetSection("Namespaces").Bind(options.Namespaces);
+                configurationSection.GetSection("NamespaceQueue").Bind(options.NamespaceQueue);
             });
         };
     }
