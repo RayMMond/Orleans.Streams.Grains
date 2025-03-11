@@ -9,7 +9,7 @@ public class GrainsStreamQueueMapper : IConsistentRingStreamQueueMapper
     private const string EmptyNamespace = "(empty)";
     private readonly ConcurrentDictionary<string, HashRingBasedStreamQueueMapper> _ringQueues = [];
 
-    public GrainsStreamQueueMapper(GrainsStreamProviderOptions options)
+    public GrainsStreamQueueMapper(GrainsStreamOptions options)
     {
         if (options.MaxStreamNamespaceQueueCount < 1)
         {
@@ -17,7 +17,7 @@ public class GrainsStreamQueueMapper : IConsistentRingStreamQueueMapper
         }
 
         var allOptions = options.NamespaceQueue.Concat([
-            new GrainsStreamProviderOptions.GrainsStreamProviderNamespaceQueueOptions
+            new GrainsStreamOptions.GrainsStreamProviderNamespaceQueueOptions
             {
                 Namespace = EmptyNamespace,
                 QueueCount = options.MaxStreamNamespaceQueueCount

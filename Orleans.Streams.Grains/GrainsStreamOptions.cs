@@ -1,6 +1,6 @@
 namespace Orleans.Streams.Grains;
 
-public class GrainsStreamProviderOptions
+public class GrainsStreamOptions
 {
     public const int DefaultMaxStreamNamespaceQueueCount = 5;
 

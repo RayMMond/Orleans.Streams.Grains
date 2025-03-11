@@ -19,7 +19,7 @@ public class GrainsQueueAdapterFactory : IQueueAdapterFactory
     protected Func<QueueId, Task<IStreamFailureHandler>>? StreamFailureHandlerFactory { private get; set; }
 
     public GrainsQueueAdapterFactory(string name,
-        GrainsStreamProviderOptions options,
+        GrainsStreamOptions options,
         SimpleQueueCacheOptions cacheOptions,
         IClusterClient client,
         ILoggerFactory loggerFactory)
@@ -82,12 +82,10 @@ public class GrainsQueueAdapterFactory : IQueueAdapterFactory
 
     public static GrainsQueueAdapterFactory Create(IServiceProvider services, string name)
     {
-        var options = services.GetOptionsByName<GrainsStreamProviderOptions>(name);
+        var options = services.GetOptionsByName<GrainsStreamOptions>(name);
         var cacheOptions = services.GetOptionsByName<SimpleQueueCacheOptions>(name);
-        var factory =
-            ActivatorUtilities.CreateInstance<GrainsQueueAdapterFactory>(services, name, options,
-                cacheOptions);
-        factory.Init();
-        return factory;
+        var f = ActivatorUtilities.CreateInstance<GrainsQueueAdapterFactory>(services, name, options, cacheOptions);
+        f.Init();
+        return f;
     }
 }
