@@ -46,17 +46,7 @@ public sealed class GrainsQueueStreamProviderBuilder : IProviderBuilder<ISiloBui
     {
         return configurator =>
         {
-            configurator.ConfigureGrains(optionsBuilder =>
-            {
-                optionsBuilder.Configure(options =>
-                {
-                    options.MaxStreamNamespaceQueueCount =
-                        int.TryParse(configurationSection["MaxStreamNamespaceQueueCount"], out var c)
-                            ? c
-                            : GrainsStreamOptions.DefaultMaxStreamNamespaceQueueCount;
-                    configurationSection.GetSection("NamespaceQueue").Bind(options.NamespaceQueue);
-                });
-            });
+            configurator.ConfigureGrains(optionsBuilder => { optionsBuilder.Configure(configurationSection.Bind); });
 
             if (int.TryParse(configurationSection["CacheSize"], out var cacheSize))
             {
@@ -75,8 +65,9 @@ public sealed class GrainsQueueStreamProviderBuilder : IProviderBuilder<ISiloBui
             if (int.TryParse(configurationSection["CacheSize"], out var cacheSize))
             {
                 configurator.ConfigureCache(cacheSize);
-                configurator.UseConsistentRingQueueBalancer();
             }
+
+            configurator.UseConsistentRingQueueBalancer();
         };
     }
 }
