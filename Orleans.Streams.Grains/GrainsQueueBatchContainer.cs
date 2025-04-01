@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Orleans.Providers.Streams.Common;
 using Orleans.Runtime;
 
@@ -8,17 +7,15 @@ namespace Orleans.Streams.Grains;
 
 [Serializable]
 [GenerateSerializer]
+[Alias("Orleans.Streams.Grains.GrainsQueueBatchContainer")]
 public class GrainsQueueBatchContainer : IBatchContainer
 {
-    [JsonInclude]
     [Id(0)]
     private EventSequenceTokenV2? sequenceToken;
 
-    [JsonInclude]
     [Id(1)]
     private readonly List<object> events;
 
-    [JsonInclude]
     [Id(2)]
     private readonly Dictionary<string, object>? requestContext;
 
@@ -32,7 +29,6 @@ public class GrainsQueueBatchContainer : IBatchContainer
         set => sequenceToken = value;
     }
 
-    [JsonConstructor]
     public GrainsQueueBatchContainer(
         StreamId streamId,
         List<object> events,
