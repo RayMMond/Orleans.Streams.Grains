@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Orleans.Providers.Streams.Common;
 using Orleans.Runtime;
 
@@ -10,17 +11,20 @@ namespace Orleans.Streams.Grains;
 [Alias("Orleans.Streams.Grains.GrainsQueueBatchContainer")]
 public class GrainsQueueBatchContainer : IBatchContainer
 {
+    [JsonProperty]
     [Id(0)]
     private EventSequenceTokenV2? sequenceToken;
 
+    [JsonProperty]
     [Id(1)]
     private readonly List<object> events;
 
+    [JsonProperty]
     [Id(2)]
     private readonly Dictionary<string, object>? requestContext;
 
     [Id(3)]
-    public StreamId StreamId { get; }
+    public StreamId StreamId { get; private set; }
 
     public StreamSequenceToken SequenceToken => sequenceToken!;
 
@@ -29,6 +33,7 @@ public class GrainsQueueBatchContainer : IBatchContainer
         set => sequenceToken = value;
     }
 
+    [JsonConstructor]
     public GrainsQueueBatchContainer(
         StreamId streamId,
         List<object> events,
