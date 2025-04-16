@@ -12,14 +12,14 @@ public class QueueGrain(
     IOptions<GrainsQueueOptions> options)
     : Grain, IQueueGrain
 {
-    public async Task QueueMessageBatchAsync(GrainsQueueBatchContainer message)
+    public Task QueueMessageBatchAsync(GrainsQueueBatchContainer message)
     {
         message.RealSequenceToken = new EventSequenceTokenV2(persistentState.State.LastReadMessage++);
         persistentState.State.Messages.Enqueue(message);
-        await persistentState.WriteStateAsync();
+        return Task.CompletedTask;
     }
 
-    public async Task<IList<GrainsQueueBatchContainer>> GetQueueMessagesAsync(int maxCount)
+    public Task<IList<GrainsQueueBatchContainer>> GetQueueMessagesAsync(int maxCount)
     {
         var messages = new List<GrainsQueueBatchContainer>();
         while (persistentState.State.Messages.Count > 0 && messages.Count < maxCount)
@@ -29,11 +29,10 @@ public class QueueGrain(
             messages.Add(message);
         }
 
-        await persistentState.WriteStateAsync();
-        return messages;
+        return Task.FromResult<IList<GrainsQueueBatchContainer>>(messages);
     }
 
-    public async Task DeleteQueueMessageAsync(GrainsQueueBatchContainer message)
+    public Task DeleteQueueMessageAsync(GrainsQueueBatchContainer message)
     {
         var pending = persistentState.State.PendingMessages.Dequeue();
         while (!pending.SequenceToken.Equals(pending.SequenceToken))
@@ -58,13 +57,18 @@ public class QueueGrain(
             pending = persistentState.State.PendingMessages.Dequeue();
         }
 
-        await persistentState.WriteStateAsync();
+        return Task.CompletedTask;
     }
 
     public async Task ShutdownAsync()
     {
-        persistentState.State.LastReadMessage = 0;
         await persistentState.WriteStateAsync();
+    }
+
+    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
+    {
+        await persistentState.WriteStateAsync(cancellationToken);
+        await base.OnDeactivateAsync(reason, cancellationToken);
     }
 
     public Task<QueueStatus> GetStatusAsync()
