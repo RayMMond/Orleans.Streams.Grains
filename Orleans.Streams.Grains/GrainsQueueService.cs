@@ -28,7 +28,7 @@ public class GrainsQueueService(string providerName, IStreamQueueMapper streamQu
     public async Task<GrainsQueueStatus> GetQueueStatusAsync(QueueId? queueId = null)
     {
         var result = new GrainsQueueStatus();
-        if (queueId is null)
+        if (!queueId.HasValue)
         {
             foreach (var q in streamQueueMapper.GetAllQueues())
             {
@@ -37,7 +37,7 @@ public class GrainsQueueService(string providerName, IStreamQueueMapper streamQu
         }
         else
         {
-            result.Add(queueId.Value, await client.GetGrain<IQueueGrain>(queueId.ToString()).GetStatusAsync());
+            result.Add(queueId.Value, await client.GetGrain<IQueueGrain>(queueId.Value.ToString()).GetStatusAsync());
         }
 
         return result;

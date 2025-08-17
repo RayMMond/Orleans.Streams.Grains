@@ -4,7 +4,7 @@ namespace Orleans.Streams.Grains;
 [GenerateSerializer]
 public class QueueStatus
 {
-    public QueueStatus(string eTag,
+    public QueueStatus(string? eTag,
         long lastReadMessage,
         int messageCount,
         int pendingMessagesCount,
@@ -18,7 +18,7 @@ public class QueueStatus
     }
 
     [Id(0)]
-    public string ETag { get; set; }
+    public string? ETag { get; set; }
 
     [Id(1)]
     public long LastReadMessage { get; set; }

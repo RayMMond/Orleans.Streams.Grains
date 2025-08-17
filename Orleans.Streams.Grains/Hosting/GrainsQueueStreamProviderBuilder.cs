@@ -31,12 +31,12 @@ namespace Orleans.Streams.Grains.Hosting;
 
 public sealed class GrainsQueueStreamProviderBuilder : IProviderBuilder<ISiloBuilder>, IProviderBuilder<IClientBuilder>
 {
-    public void Configure(ISiloBuilder builder, string name, IConfigurationSection configurationSection)
+    public void Configure(ISiloBuilder builder, string? name, IConfigurationSection configurationSection)
     {
         builder.AddGrainsStreams(name, ConfigureSilo(configurationSection));
     }
 
-    public void Configure(IClientBuilder builder, string name, IConfigurationSection configurationSection)
+    public void Configure(IClientBuilder builder, string? name, IConfigurationSection configurationSection)
     {
         builder.AddGrainsStreams(name, ConfigureClient(configurationSection));
     }
